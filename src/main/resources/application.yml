@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: gym-management-system
   datasource:
     url: jdbc:postgresql://localhost:5432/fitness
     username: postgres
@@ -10,6 +12,11 @@ spring:
     show-sql: true
   flyway:
     enabled: true
+
+jwt:
+  secret: fitnessAppSecretKey32SymbolsMinRequiredForHS256
+  expiration: 86400000
+
 logging:
   level:
     org.flywaydb: DEBUG
