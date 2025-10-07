@@ -7,7 +7,8 @@ import ru.fitness.gym_management.enums.Role;
 @Data
 @Builder
 public class AuthResponseDto {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private String email;
     private Role role;
 }

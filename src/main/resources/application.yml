@@ -15,7 +15,9 @@ spring:
 
 jwt:
   secret: fitnessAppSecretKey32SymbolsMinRequiredForHS256
-  expiration: 86400000
+  expiration: 900000        # 15 минут для accessToken
+  refresh:
+    expiration: 2592000000  # 30 дней для refreshToken (в миллисекундах)
 
 logging:
   level:
