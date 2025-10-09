@@ -1,14 +1,13 @@
 package ru.fitness.gym_management.exception;
 
-import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.fitness.gym_management.dto.ValidationErrorResponse;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,8 +37,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ValidationErrorResponse> handleConstraintViolation(
-            ConstraintViolationException ex){
-
+            ConstraintViolationException ex) {
         List<String> errors = ex.getConstraintViolations()
                 .stream()
                 .map(violation -> violation.getMessage())
@@ -56,14 +54,28 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public  ResponseEntity<ValidationErrorResponse> handleConstraintViolation(
-            RuntimeException ex){
+    public ResponseEntity<ValidationErrorResponse> handleAuthRuntimeErrors(RuntimeException ex) {
+        String message = ex.getMessage();
+
+        if (message != null && (
+                message.contains("Refresh token expired") ||
+                        message.contains("Invalid refresh token") ||
+                        message.contains("Refresh token was revoked"))) {
+
+            ValidationErrorResponse response = new ValidationErrorResponse(
+                    LocalDateTime.now(),
+                    HttpStatus.UNAUTHORIZED.value(),
+                    "Unauthorized",
+                    List.of(message)
+            );
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
 
         ValidationErrorResponse response = new ValidationErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal error",
-                List.of(ex.getMessage())
+                List.of("An unexpected error occurred")
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }

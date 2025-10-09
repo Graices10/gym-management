@@ -26,5 +26,8 @@ public class RefreshToken {
     private User user;
 
     @Column(nullable = false)
+    private Instant expiryDate; // ← ДОБАВЛЕНО
+
+    @Column(nullable = false)
     private boolean revoked = false;
 }
